@@ -33,8 +33,7 @@ class ActivationController extends Controller
 
     private function isValidSignature(Request $request)
     {
-        $email = $request->query('email');
-        $url = url('/activate-account') . '?email=' . urlencode($email);
-        return app('url')->hasValidSignature($request, $url);
+        return $request->hasValidSignature();
     }
+
 }

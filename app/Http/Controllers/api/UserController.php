@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Models\GameShot;
+
+
 
 
 
@@ -83,6 +86,29 @@ class UserController extends Controller
         
         
     }
+
+    public function activarCuenta(Request $request)
+{
+    $user = User::where('email', $request->email)->first();
+    if (!$user) {
+        return response()->json(['result' => false, 'msg' => 'Usuario no encontrado.'], 404);
+    }
+
+    $user->email_verified_at = now();
+    $user->save();
+
+    return response()->json(['result' => true, 'msg' => 'Cuenta activada con éxito.']);
+}
+
+
+    public function sendActivationEmail(User $user)
+    {
+        $activationUrl = route('activation.confirm', ['token' => $user->activation_token]);
+
+        Mail::to($user->email)->send(new ActivationMail($activationUrl));
+    }
+
+
     public function codeGenerate(Request $request)
     {
         $login = $this->generateCodeValidate($request);
@@ -149,7 +175,7 @@ class UserController extends Controller
                     'msg' => "La cuenta no esta activa."
                 ], 401);
             }            
-            if($user->code = $request->code){
+            if($user->code == $request->code){
                 $token = $user->createToken('sactum-token')->plainTextToken;
                 return response()->json([            
                     'result' => true,
@@ -280,28 +306,72 @@ class UserController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if($user){
-                $juegos = Game::where('user_1', $user->id)->orWhere('user_2', $user->id)->get();
-                if($juegos){
-                    Log::info($juegos);
-                    $juegos->transform(function ($juego) {
-                        $user1 = User::find($juego->user_1);
-                        $user2 = User::find($juego->user_2);
-                        $juego->user_1 = $user1 ? $user1->name : 'Usuario no encontrado';
-                        $juego->user_2 = $user2 ? $user2->name : 'Usuario no encontrado';
-                        return $juego;
+            Log::info('User requesting history:', ['user_id' => $user->id]);
+
+            if ($user) {
+                try {
+                    // Obtener los juegos en los que está involucrado el usuario
+                    $juegos = Game::where(function ($query) use ($user) {
+                        $query->where('user_1', $user->id)
+                            ->orWhere('user_2', $user->id);
+                    })
+                        ->orderBy('created_at', 'desc')
+                        ->with(['user1', 'user2']) // Cargar los jugadores relacionados
+                        ->get();
+
+                    Log::info('Games found for user:', [
+                        'user_id' => $user->id,
+                        'games_count' => $juegos->count(),
+                        'first_game' => $juegos->first()
+                    ]);
+
+                    // Formatear los juegos con los tiros de cada uno
+                    $formattedGames = $juegos->map(function ($juego) {
+                        // Obtener los tiros de la partida
+                        $shots = GameShot::where('game_id', $juego->id)
+                            ->get()
+                            ->map(function ($shot) {
+                                return [
+                                    'player' => User::find($shot->player_id)->name,
+                                    'shot_number' => $shot->shot_number,
+                                    'is_correct' => $shot->is_correct ? 'Acierto' : 'Fallo',
+                                    'fecha' => $shot->created_at->format('Y-m-d H:i:s'),
+                                ];
+                            });
+
+                        return [
+                            'id' => $juego->id,
+                            'jugador1' => $juego->user1->name ?? 'Usuario no encontrado',
+                            'jugador2' => $juego->user2->name ?? 'Esperando jugador',
+                            'ganador' => $juego->won ?? 'Sin ganador',
+                            'estado' => $juego->is_active ? 'En curso' : 'Finalizado',
+                            'fecha' => $juego->created_at->format('Y-m-d H:i:s'),
+                            'turno' => $juego->turn,
+                            'tiros' => $shots  // Agregar los tiros al historial
+                        ];
                     });
+
+                    Log::info('Formatted games:', ['games' => $formattedGames]);
+
                     return response()->json([
                         'result' => true,
                         'msg' => 'Historial de juegos.',
-                        'data' => $juegos
+                        'data' => $formattedGames
                     ], 200);
+
+                } catch (\Exception $e) {
+                    Log::error('Error in historial:', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+
+                    return response()->json([
+                        'result' => false,
+                        'msg' => 'Error al obtener el historial: ' . $e->getMessage()
+                    ], 500);
                 }
-                return response()->json([
-                    'result' => false,
-                    'msg' => 'Sin historial.'
-                ], 404);
             }
+
             return response()->json([
                 'result' => false,
                 'msg' => 'Usuario no existente.',
@@ -311,13 +381,15 @@ class UserController extends Controller
                 'result' => false,
                 'msg' => 'Usuario no autenticado.',
             ], 401);
-        }    
+        }
     }
+    
+
     public function destroy(Request $request)
     {
         if (Auth::check()) {
             $user = Auth::user();
-            $user = User::find($user->user_id);
+            $user = User::find($user->id);
             if (!$user) {
                 return response()->json([
                     'result' => false,

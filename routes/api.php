@@ -17,7 +17,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::prefix('user')->group(function (){
-    Route::get('/activate-account', [ActivationController::class, 'activate'])->name('activate.account');
+    Route::get('/activate', [UserController::class, 'activarCuenta'])->name('activate.account')->middleware('signed');
+    Route::get('/activate-account', [ActivationController::class, 'activate'])->name('activation.confirm');
     Route::post('/code', [UserController::class, 'codeGenerate']); //Recibe correo y contraseña
     Route::post('/login', [UserController::class, 'login']); //Recibe correo y código
     Route::post('/register', [UserController::class, 'store']); // Recibe name, email y password
@@ -31,13 +32,17 @@ Route::get('/prueba', function () {
 Route::middleware(['auth:sanctum', 'verificarCuentaActiva'])->group(function () {
     //RUD de usuarios
     Route::prefix('user')->group(function (){
+        Route::middleware(['auth:sanctum', 'verificarCuentaActiva'])->group(function () {
+            Route::get('/userinfo', [UserController::class, 'userInfo']);
+            // más rutas protegidas...
+        });
+        
         Route::get('/search/{id}', [UserController::class, 'search'])->where('id', '[0-9]+');
         Route::put('/update', [UserController::class, 'update']); // Puede recibir name, email y password 
 
         Route::post('/logout', [UserController::class, 'logout']); 
-        Route::get('/user-info', [UserController::class, 'userInfo']);
         Route::delete('/delete', [UserController::class, 'destroy']);
-        Route::get('/historial', [UserController::class, 'historial']);
+        Route::get('/history', [UserController::class, 'historial']); // Changed from /historial to /history
     });
     Route::prefix('game')->group(function (){
         Route::post('/create', [GameController::class, 'store']);
@@ -49,6 +54,7 @@ Route::middleware(['auth:sanctum', 'verificarCuentaActiva'])->group(function () 
         Route::put('/win/{id}', [GameController::class, 'win'])->where('id', '[0-9]+');
         Route::put('/turn/{id}', [GameController::class, 'turn'])->where('id', '[0-9]+');
         Route::put('/board/{id}', [GameController::class, 'board'])->where('id', '[0-9]+');
+        Route::post('games/{id}/shot', [GameController::class, 'shot'])->middleware('auth:sanctum');
     });
 });
 

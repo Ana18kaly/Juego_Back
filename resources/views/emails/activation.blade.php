@@ -8,13 +8,14 @@
 </head>
 <body>
     <h1>Bienvenido a el juego!!!</h1>
-    <img src="../img/parkkk.gif" alt="Logo de la aplicación" class="img2">
+    <img src="{{ asset('img/parkkk.gif') }}" alt="Logo de la aplicación" class="img2">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <div>
         <p>
             Hola, para poder continuar y poder jugar, primero debes confirmar tu cuenta.
         </p>
         <br><br>
-        <span>— APIarcamiento Team</span>
+        <span>— :d</span>
     </div>
     <br><br>
     <a href="{{ $url }}" class="btn btn-primary btn-personalizado">Confirmar cuenta</a>

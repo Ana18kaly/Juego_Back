@@ -16,9 +16,14 @@ class Game extends Model
         'start_at',
         'is_active',
         'won',
-        'turn'
+        'turn',
+        'board1',
+        'board2',
+        'hits1',
+        'hits2'
     ];
 
+    // Relaciones
     public function user1()
     {
         return $this->belongsTo(User::class, 'user_1');
@@ -27,5 +32,10 @@ class Game extends Model
     public function user2()
     {
         return $this->belongsTo(User::class, 'user_2');
+    }
+
+    public function shots()
+    {
+        return $this->hasMany(GameShot::class, 'game_id');
     }
 }

@@ -7,6 +7,12 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
+    'App\\Events\\GameCanelEvent' => $baseDir . '/app/Events/GameCanelEvent.php',
+    'App\\Events\\GamesEvent' => $baseDir . '/app/Events/GamesEvent.php',
+    'App\\Events\\HistoryEvent' => $baseDir . '/app/Events/HistoryEvent.php',
+    'App\\Events\\StartGameEvent' => $baseDir . '/app/Events/StartGameEvent.php',
+    'App\\Events\\TurnEvent' => $baseDir . '/app/Events/TurnEvent.php',
+    'App\\Events\\WinEvent' => $baseDir . '/app/Events/WinEvent.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\api\\ActivationController' => $baseDir . '/app/Http/Controllers/api/ActivationController.php',
@@ -22,6 +28,8 @@ return array(
     'App\\Http\\Middleware\\TrustProxies' => $baseDir . '/app/Http/Middleware/TrustProxies.php',
     'App\\Http\\Middleware\\ValidateSignature' => $baseDir . '/app/Http/Middleware/ValidateSignature.php',
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
+    'App\\Http\\Middleware\\verificarCuentaActiva' => $baseDir . '/app/Http/Middleware/verificarCuentaActiva.php',
+    'App\\Mail\\ActivationMail' => $baseDir . '/app/Mail/ActivationMail.php',
     'App\\Models\\Game' => $baseDir . '/app/Models/Game.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',

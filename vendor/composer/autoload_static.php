@@ -607,6 +607,12 @@ class ComposerStaticInit7d7739783eac6f93a348357dcaef7102
 
     public static $classMap = array (
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+        'App\\Events\\GameCanelEvent' => __DIR__ . '/../..' . '/app/Events/GameCanelEvent.php',
+        'App\\Events\\GamesEvent' => __DIR__ . '/../..' . '/app/Events/GamesEvent.php',
+        'App\\Events\\HistoryEvent' => __DIR__ . '/../..' . '/app/Events/HistoryEvent.php',
+        'App\\Events\\StartGameEvent' => __DIR__ . '/../..' . '/app/Events/StartGameEvent.php',
+        'App\\Events\\TurnEvent' => __DIR__ . '/../..' . '/app/Events/TurnEvent.php',
+        'App\\Events\\WinEvent' => __DIR__ . '/../..' . '/app/Events/WinEvent.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\api\\ActivationController' => __DIR__ . '/../..' . '/app/Http/Controllers/api/ActivationController.php',
@@ -622,6 +628,8 @@ class ComposerStaticInit7d7739783eac6f93a348357dcaef7102
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\ValidateSignature' => __DIR__ . '/../..' . '/app/Http/Middleware/ValidateSignature.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
+        'App\\Http\\Middleware\\verificarCuentaActiva' => __DIR__ . '/../..' . '/app/Http/Middleware/verificarCuentaActiva.php',
+        'App\\Mail\\ActivationMail' => __DIR__ . '/../..' . '/app/Mail/ActivationMail.php',
         'App\\Models\\Game' => __DIR__ . '/../..' . '/app/Models/Game.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
