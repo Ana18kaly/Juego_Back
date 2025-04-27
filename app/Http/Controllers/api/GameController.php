@@ -203,7 +203,7 @@ class GameController extends Controller
                     if($juego->user_2 == $juego->turn){
                         $juego->turn = $juego->user_1;
                     }else{
-                        $juego->turn = $juego->user_2   ;
+                        $juego->turn = $juego->user_2;
                     }
                 $juego->save();
                 event(new TurnEvent($juego));
@@ -241,23 +241,26 @@ class GameController extends Controller
                 if ($juego->turn == Auth::user()->id) {
                     // Verificar si el tiro fue correcto
                     $fueCorrecto = $this->verificarAcierto($juego, Auth::user()->id);
+                    
 
                     // Registrar el nuevo tiro
                     $tiroActual = GameShot::create([
                         'game_id' => $juego->id,
                         'player_id' => Auth::user()->id,
-                        'shot_number' => ($juego->user_1 == Auth::user()->id ? $juego->board1 : $juego->board2) + 1,
+                        'shot_number' => ($juego->user_1 == Auth::user()->id ? $juego->boad1 : $juego->boad2) + 1,
                         'is_correct' => $fueCorrecto
                     ]);
+                    
 
                     // Actualizar contadores en el juego
                     if (Auth::user()->id == $juego->user_1) {
-                        $juego->board1 = $juego->board1 + 1;
+                        $juego->boad1 = $juego->boad1 + 1;
                         if ($fueCorrecto) {
                             $juego->hits1 = $juego->hits1 + 1;
+                            
                         }
                     } else {
-                        $juego->board2 = $juego->board2 + 1;
+                        $juego->boad2 = $juego->boad2 + 1;
                         if ($fueCorrecto) {
                             $juego->hits2 = $juego->hits2 + 1;
                         }
@@ -273,7 +276,10 @@ class GameController extends Controller
                         'correcto' => $fueCorrecto
                     ]);
                     $juego->save();
+                    event(new TurnEvent($juego));
+                   
                 }
+               
                 return response()->json([
                     "msg" => "Bien hecho!!!",
                     'result' => true,
